@@ -68,7 +68,7 @@ with st.sidebar:
     with tab2:
         for s in sorted(st.session_state.niezaliczone):
             if s not in st.session_state.zaliczone:
-                st.write(f"📌 {s}")
+                st.write(f"❗ {s}")
 
     st.write("---")
     if st.button("🗑️ Wyczyść postęp", type="primary", use_container_width=True):
@@ -76,7 +76,7 @@ with st.sidebar:
         st.rerun()
 
 # --- GŁÓWNY PANEL ---
-st.title("🗂️ Fiszki Angielskiego (YAML Mode)")
+st.title("🗂️ Fiszki Angielskiego")
 
 if st.session_state.aktualne_pytanie:
     q = st.session_state.aktualne_pytanie
@@ -136,6 +136,6 @@ st.markdown("""
     }
     </style>
     <div class="foka-container">
-        <div class="foka">🦭</div>
+        <div class="foka">🦭🦭🦭🦭🦭🦭🦭</div>
     </div>
     """, unsafe_allow_html=True)
