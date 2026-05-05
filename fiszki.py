@@ -3,7 +3,6 @@ import random
 
 # Rozszerzona baza o przykładowe zdania dla każdego słowa z obraz.png
 DANE_SLOWKA = {
-    DANE_SLOWKA = {
     "Exceptional": {"PL": "wyjątkowy", "Sentence": "The quality of your work is truly exceptional."},
     "Stunning": {"PL": "zachwycający", "Sentence": "The view from the balcony was absolutely stunning."},
     "Hideous": {"PL": "paskudny", "Sentence": "She wore a hideous bright orange dress to the party."},
