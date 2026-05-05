@@ -113,12 +113,11 @@ else:
     if st.button("Zacznij od nowa"):
         resetuj_postep()
         st.rerun()
-
-# --- ANIMOWANA FOKA NA DOLE ---
+        
 st.markdown("""
     <style>
     @keyframes move {
-        0% { transform: translateX(-100%); }
+        0% { transform: translateX(-100px); }
         100% { transform: translateX(100vw); }
     }
     .foka-container {
@@ -127,16 +126,16 @@ st.markdown("""
         left: 0;
         width: 100%;
         overflow: hidden;
-        z-index: 999;
-        pointer-events: none; /* Żeby nie przeszkadzała w klikaniu */
+        z-index: 9999;
+        pointer-events: none;
     }
     .foka {
         display: inline-block;
         font-size: 40px;
-        animation: move 15s linear infinite;
+        animation: move 20s linear infinite;
     }
     </style>
     <div class="foka-container">
         <div class="foka">🦭</div>
     </div>
-    """, unsafe_allow_status=True, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
