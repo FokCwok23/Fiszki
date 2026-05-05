@@ -1,101 +1,18 @@
 import streamlit as st
 import random
+import yaml
+import os
 
-# Rozszerzona baza o przykładowe zdania dla każdego słowa z obraz.png
-DANE_SLOWKA = {
-    "Exceptional": {"PL": "wyjątkowy", "Sentence": "The quality of your work is truly exceptional."},
-    "Stunning": {"PL": "zachwycający", "Sentence": "The view from the balcony was absolutely stunning."},
-    "Hideous": {"PL": "paskudny", "Sentence": "She wore a hideous bright orange dress to the party."},
-    "Appalling": {"PL": "przerażający/beznadziejny", "Sentence": "The weather conditions during the trip were appalling."},
-    "Vast": {"PL": "ogromny", "Sentence": "The universe is a vast and mysterious place."},
-    "Minute": {"PL": "malutki", "Sentence": "He found minute particles of gold in the river sand."},
-    "Essential": {"PL": "niezbędny", "Sentence": "Experience is essential for this position."},
-    "Crucial": {"PL": "kluczowy", "Sentence": "This goal was crucial for our team's victory."},
-    "Tedious": {"PL": "nużący", "Sentence": "Checking all the data manually was a tedious task."},
-    "Hilarious": {"PL": "komiczny", "Sentence": "We watched a hilarious comedy last night."},
-    "Thrilled": {"PL": "podekscytowany", "Sentence": "I was thrilled to be invited to the conference."},
-    "Miserable": {"PL": "nieszczęśliwy", "Sentence": "I felt miserable after losing my favorite watch."},
-    "Vivid": {"PL": "obrazowy/wyrazisty", "Sentence": "He gave a vivid description of his travels."},
-    "Straightforward": {"PL": "jasny/prosty", "Sentence": "The repair was quite straightforward and took only ten minutes."},
-    "Obscure": {"PL": "niejasny/mało znany", "Sentence": "The origins of this tradition remain obscure."},
-    "Ambiguous": {"PL": "dwuznaczny", "Sentence": "Her answer was ambiguous, so I wasn't sure what she meant."},
-    "Sceptical": {"PL": "sceptyczny", "Sentence": "Many people are sceptical about the new government policy."},
-    "Inevitable": {"PL": "nieunikniony", "Sentence": "Conflict is sometimes inevitable in a large team."},
-    "Remarkable": {"PL": "godny uwagi", "Sentence": "It is remarkable how fast she learned to speak Polish."},
-    "Profound": {"PL": "głęboki", "Sentence": "The book had a profound impact on my way of thinking."},
-    "To enhance": {"PL": "ulepszać/wzmacniać", "Sentence": "You can use filters to enhance your photos."},
-    "To diminish": {"PL": "zmniejszać się", "Sentence": "The noise began to diminish as we walked away."},
-    "To maintain": {"PL": "utrzymywać", "Sentence": "It is important to maintain a healthy lifestyle."},
-    "To acquire": {"PL": "nabywać", "Sentence": "The company is looking to acquire new technology."},
-    "To obtain": {"PL": "uzyskiwać", "Sentence": "You must obtain permission before entering the building."},
-    "To clarify": {"PL": "wyjaśniać", "Sentence": "I need to clarify a few points in the contract."},
-    "To emphasize": {"PL": "podkreślać", "Sentence": "The teacher wanted to emphasize the importance of grammar."},
-    "Furthermore": {"PL": "ponadto", "Sentence": "The hotel is cheap; furthermore, it's very clean."},
-    "Moreover": {"PL": "co więcej", "Sentence": "The rent is high; moreover, the house is in bad condition."},
-    "Nevertheless": {"PL": "niemniej jednak", "Sentence": "It was raining; nevertheless, we went for a walk."},
-    "Consequently": {"PL": "w rezultacie", "Sentence": "He failed the test and consequently had to retake the course."},
-    "Thus": {"PL": "zatem", "Sentence": "He forgot his passport, thus he couldn't board the plane."},
-    "Alternatively": {"PL": "ewentualnie", "Sentence": "You can pay by card; alternatively, we accept cash."},
-    "Significantly": {"PL": "znacząco", "Sentence": "Prices have increased significantly this year."},
-    "Undoubtedly": {"PL": "niewątpliwie", "Sentence": "She is undoubtedly the best candidate for the job."},
-    "Advantage": {"PL": "zaleta", "Sentence": "One advantage of living in the city is the public transport."},
-    "Drawback": {"PL": "wada", "Sentence": "The only drawback of this car is its high fuel consumption."},
-    "Benefit": {"PL": "korzyść", "Sentence": "Regular exercise provides many health benefits."},
-    "Solution": {"PL": "rozwiązanie", "Sentence": "We need to find a creative solution to this problem."},
-    "Obstacle": {"PL": "przeszkoda", "Sentence": "Lack of money was the main obstacle to starting the business."},
-    "Development": {"PL": "rozwój", "Sentence": "The rapid development of AI is changing the world."},
-    "Approach": {"PL": "podejście", "Sentence": "We need a new approach to solve this mystery."},
-    "Impact": {"PL": "wpływ", "Sentence": "Social media has a huge impact on teenagers."},
-    "Tendency": {"PL": "tendencja", "Sentence": "There is a tendency for people to overspend during holidays."},
-    "Diversity": {"PL": "różnorodność", "Sentence": "The diversity of plants in this forest is amazing."},
-    "Shortage": {"PL": "niedobór", "Sentence": "The country is facing a severe water shortage."},
-    "Abundance": {"PL": "obfitość", "Sentence": "There was an abundance of food at the party."},
-    "Controversy": {"PL": "kontrowersja", "Sentence": "The new law caused a lot of controversy."},
-    "Significance": {"PL": "znaczenie", "Sentence": "Few people realized the significance of his discovery."},
-    "Feasibility": {"PL": "wykonalność", "Sentence": "We need to conduct a feasibility study for the project."},
-    "Interaction": {"PL": "interakcja", "Sentence": "The interaction between the students was very positive."},
-    "Notion": {"PL": "pojęcie/pogląd", "Sentence": "I don't agree with the notion that money buys happiness."},
-    "Cope with": {"PL": "radzić sobie z", "Sentence": "He found it hard to cope with the loss of his dog."},
-    "Account for": {"PL": "wyjaśniać/stanowić część", "Sentence": "How do you account for the missing money?"},
-    "Break through": {"PL": "przełamać się", "Sentence": "Scientists hope to break through with a new vaccine."},
-    "Bring about": {"PL": "spowodować", "Sentence": "The new manager wants to bring about many changes."},
-    "Carry on": {"PL": "kontynuować", "Sentence": "Please carry on with your work while I'm away."},
-    "Come up with": {"PL": "wymyślić", "Sentence": "Can you come up with a better idea?"},
-    "Dwell on": {"PL": "rozpamiętywać", "Sentence": "There's no point to dwell on past mistakes."},
-    "End up": {"PL": "skończyć", "Sentence": "If you don't hurry, you will end up being late."},
-    "Figure out": {"PL": "zrozumieć/rozwiązać", "Sentence": "I can't figure out how to open this box."},
-    "Get over": {"PL": "przeboleć/wyzdrowieć", "Sentence": "It took him a long time to get over the flu."},
-    "Look into": {"PL": "badać/przyglądać się", "Sentence": "The police are starting to look into the matter."},
-    "Make up for": {"PL": "nadrabiać/rekompensować", "Sentence": "I bought her flowers to make up for being late."},
-    "Point out": {"PL": "wskazać/zauważyć", "Sentence": "He was quick to point out my mistakes."},
-    "Put up with": {"PL": "znosić/tolerować", "Sentence": "I can't put up with this noise anymore."},
-    "Set up": {"PL": "założyć/skonfigurować", "Sentence": "She wants to set up her own photography studio."},
-    "Take up": {"PL": "zacząć", "Sentence": "I decided to take up painting as a hobby."},
-    "Turn out": {"PL": "okazać się", "Sentence": "It turned out that we were in the wrong building."},
-    "Watch out": {"PL": "uważać", "Sentence": "Watch out! There is ice on the pavement."},
-    "Work out": {"PL": "powieść się/rozwiązać", "Sentence": "Don't worry, everything will work out in the end."},
-    "Back down": {"PL": "wycofać się", "Sentence": "Neither of them was willing to back down in the argument."},
-    "A double-edged sword": {"PL": "miecz obosieczny", "Sentence": "The internet is a double-edged sword; it's useful but dangerous."},
-    "The tip of the iceberg": {"PL": "wierzchołek góry lodowej", "Sentence": "These financial problems are just the tip of the iceberg."},
-    "Every cloud has a silver lining": {"PL": "nie ma tego złego", "Sentence": "I lost my job, but every cloud has a silver lining – I found a better one."},
-    "In the long run": {"PL": "na dłuższą metę", "Sentence": "Eating healthy will pay off in the long run."},
-    "Take something for granted": {"PL": "brać coś za pewnik", "Sentence": "We often take our health for granted until we get sick."},
-    "Bear in mind": {"PL": "pamiętać o czymś", "Sentence": "Please bear in mind that the office is closed on Mondays."},
-    "Last but not least": {"PL": "ostatni, ale nie mniej ważny", "Sentence": "Last but not least, I want to thank my parents."},
-    "On the verge of": {"PL": "na skraju czegoś", "Sentence": "The company is on the verge of bankruptcy."},
-    "It’s high time": {"PL": "najwyższy czas", "Sentence": "It's high time you started studying for your exams."},
-    "Regardless of": {"PL": "bez względu na", "Sentence": "The law applies to everyone, regardless of their status."},
-    "In terms of": {"PL": "pod względem", "Sentence": "In terms of price, this car is the best choice."},
-    "Broaden your horizons": {"PL": "poszerzać horyzonty", "Sentence": "Traveling is a great way to broaden your horizons."},
-    "Cost an arm and a leg": {"PL": "kosztować majątek", "Sentence": "This new smartphone cost an arm and a leg."},
-    "Once in a blue moon": {"PL": "raz na ruski rok", "Sentence": "My brother visits us only once in a blue moon."},
-    "To make a long story short": {"PL": "krótko mówiąc", "Sentence": "To make a long story short, we missed the train."},
-    "Under the weather": {"PL": "czuć się niewyraźnie (chorym)", "Sentence": "I won't come to work today; I'm feeling a bit under the weather."},
-    "Keep an eye on": {"PL": "mieć oko na", "Sentence": "Can you keep an eye on my suitcase for a moment?"},
-    "Come to a conclusion": {"PL": "dojść do wniosku", "Sentence": "We talked for hours but couldn't come to a conclusion."},
-    "Up to date": {"PL": "nowoczesny/aktualny", "Sentence": "Is this map up to date?"},
-    "Take into account": {"PL": "wziąć pod uwagę", "Sentence": "You should take into account the weather when planning a trip."}
-}
+# --- ŁADOWANIE DANYCH Z PLIKU ---
+def load_data():
+    if os.path.exists("slowka.yaml"):
+        with open("slowka.yaml", "r", encoding="utf-8") as file:
+            return yaml.safe_load(file)
+    else:
+        st.error("Błąd: Nie znaleziono pliku slowka.yaml!")
+        return {}
+
+DANE_SLOWKA = load_data()
 
 st.set_page_config(page_title="Fiszki Master", layout="wide")
 
@@ -139,9 +56,10 @@ with st.sidebar:
     c1.metric("Zaliczone", len(st.session_state.zaliczone))
     c2.metric("Błędy", len(st.session_state.niezaliczone))
     
-    procent = len(st.session_state.zaliczone) / len(DANE_SLOWKA)
-    st.progress(procent)
-    st.caption(f"Ukończono {int(procent*100)}% bazy")
+    if DANE_SLOWKA:
+        procent = len(st.session_state.zaliczone) / len(DANE_SLOWKA)
+        st.progress(procent)
+        st.caption(f"Ukończono {int(procent*100)}% bazy")
 
     tab1, tab2 = st.tabs(["✅ Zaliczone", "❌ Błędy"])
     with tab1:
@@ -152,19 +70,19 @@ with st.sidebar:
             if s not in st.session_state.zaliczone:
                 st.write(f"📌 {s}")
 
+    st.write("---")
     if st.button("🗑️ Wyczyść postęp", type="primary", use_container_width=True):
         resetuj_postep()
         st.rerun()
 
 # --- GŁÓWNY PANEL ---
-st.title("🗂️ Fiszki Angielskiego")
+st.title("🗂️ Fiszki Angielskiego (YAML Mode)")
 
 if st.session_state.aktualne_pytanie:
     q = st.session_state.aktualne_pytanie
     
     st.subheader(f"Jak przetłumaczysz: **{q['slowo']}**?")
     
-    # Używamy kontenera, aby móc czyścić radio po przejściu dalej
     with st.form(key='fiszka_form'):
         wybor = st.radio("Wybierz opcję:", q['opcje'], index=None)
         submit = st.form_submit_button("Sprawdź!")
@@ -174,11 +92,9 @@ if st.session_state.aktualne_pytanie:
             st.session_state.pokaz_zdanie = True
             st.success(f"✅ Świetnie! **{q['slowo']}** = **{q['poprawna']}**")
             
-            # POKAZYWANIE ZDANIA
-            st.markdown(f"""
-            > **Example sentence:**  
-            > {q['sentence'].replace(q['slowo'], f"**{q['slowo']}**").replace(q['slowo'].lower(), f"**{q['slowo'].lower()}**")}
-            """)
+            # Wyróżnianie słowa w zdaniu
+            clean_sentence = q['sentence'].replace(q['slowo'], f"***{q['slowo']}***")
+            st.markdown(f"> **Example:** {clean_sentence}")
             
             st.session_state.zaliczone.add(q['slowo'])
             if q['slowo'] in st.session_state.niezaliczone:
@@ -192,10 +108,8 @@ if st.session_state.aktualne_pytanie:
             st.error(f"❌ Błąd. **{q['slowo']}** oznacza **{q['poprawna']}**.")
             st.session_state.niezaliczone.add(q['slowo'])
             st.button("Spróbuj inne słowo ➡️", on_click=lambda: st.session_state.update({"aktualne_pytanie": losuj_slowo()}))
-
 else:
-    st.balloons()
-    st.success("🎉 Wszystkie słówka opanowane!")
-    if st.button("Zacznij od nowa", type="primary"):
+    st.success("🎉 Wszystkie słówka z pliku YAML opanowane!")
+    if st.button("Zacznij od nowa"):
         resetuj_postep()
         st.rerun()
